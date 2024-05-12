@@ -28,6 +28,7 @@ services:
 
     volumes:
       - ./frontend:/app/frontend
+      - node_modules:/app/frontend/node_modules
 
     depends_on:
       - backend
@@ -53,6 +54,7 @@ services:
 
     volumes:
       - ./backend:/app/backend
+      - ./static:/app/backend/static
 
     depends_on:
       - db
@@ -66,3 +68,8 @@ networks:
   custom_network:
     name: ${PROJECT_NAME}
     driver: bridge
+
+
+volumes:
+  node_modules:
+    driver: local
