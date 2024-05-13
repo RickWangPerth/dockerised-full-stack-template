@@ -1,23 +1,23 @@
-# 使用 Node.js 的 Alpine 版本镜像
+# Use the Alpine version of the Node.js image
 FROM node:18-alpine
 
-# 设置工作目录
+# Set the working directory
 WORKDIR /app/frontend/
 
-# 首先复制 package.json 和 package-lock.json
+# First copy package.json and package-lock.json
 COPY package*.json .
 
-# 安装依赖
+# Install dependencies
 RUN npm install
 
-# 复制所有源代码到工作目录
+# Copy all source code to the working directory
 COPY . .
 
-# 构建应用
+# Build the application
 RUN npm run build
 
-# Next.js 默认监听 3000 端口
+# Next.js listens on port 3000 by default
 EXPOSE 3000
 
-# 使用 Next.js 的 start 命令来运行构建后的应用
+# Use Next.js's start command to run the built application
 CMD ["npm", "run", "dev"]
