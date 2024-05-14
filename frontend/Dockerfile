@@ -19,5 +19,8 @@ RUN npm run build
 # Next.js listens on port 3000 by default
 EXPOSE 3000
 
-# Use Next.js's start command to run the built application
+# Uncomment the line below to run in development mode with live reloading
 CMD ["npm", "run", "dev"]
+
+# Uncomment the line below to run in production mode
+# CMD ["npm", "start"]
