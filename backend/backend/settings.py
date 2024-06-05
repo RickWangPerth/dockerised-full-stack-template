@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +40,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'corsheaders',
     'rest_framework', 
+    'graphene_django',
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    
+    # Local apps
+    'blog.apps.BlogConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -51,12 +58,26 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
+    # Custom middleware
+    "backend.middleware.SetJWTTokenCookieMiddleware",
+    "backend.middleware.JWTAuthMiddleware",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  
 ]
+CORS_ALLOW_CREDENTIALS = True
 
+SESSION_COOKIE_SECURE = False  # 确保本地开发中未使用 https，设置为 False
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = False  # 确保本地开发中未使用 https，设置为 False
+CSRF_COOKIE_HTTPONLY = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+
+]
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -138,3 +159,26 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+GRAPHQL_JWT = {
+    "JWT_AUTH_HEADER_PREFIX": "Bearer",  # Prefix for the JWT in the authorization header
+    "JWT_VERIFY_EXPIRATION": True,       # Ensure the token is not expired
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,  # Enable long-running refresh tokens
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=10),  # Token expiration time
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),  # Refresh token expiration time
+    "JWT_SECRET_KEY": SECRET_KEY,        # Secret key used to sign the JWT
+    "JWT_ALGORITHM": "HS256",            # Algorithm used to sign the JWT
+}
+
+GRAPHENE = {
+    "SCHEMA": "backend.schema.schema",  # Path to the main schema (relpace 'backend' with your project's name)
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",  # Middleware to handle JWT
+    ],
+}
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",  # Backend for JWT authentication
+    "django.contrib.auth.backends.ModelBackend",  # Default Django authentication backend
+]

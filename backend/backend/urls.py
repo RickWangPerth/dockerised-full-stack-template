@@ -19,6 +19,11 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
+from backend.schema import schema
+from django.urls import include, path
+
 
 urlpatterns = []
 
@@ -28,5 +33,6 @@ if settings.DEBUG:
 urlpatterns += [
     path("admin/", admin.site.urls),
     path('test/', views.send_test_data),
-    
+    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
+    path('users/', include('users.urls')), 
 ]
