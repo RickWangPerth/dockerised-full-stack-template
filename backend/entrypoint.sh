@@ -3,8 +3,8 @@
 /wait-for-postgres.sh postgresdb
 
 # Perform database migration
-python manage.py makemigrations
-python manage.py migrate
+poetry run python manage.py makemigrations
+poetry run python manage.py migrate
 
 # Collect static files
 python manage.py collectstatic --noinput

@@ -1,5 +1,5 @@
 # Use a lightweight Python image
-FROM python:3.10-alpine
+FROM python:3.12-alpine
 
 # Set environment variables to ensure Python outputs are directed to the console and no bytecode files are generated
 ENV PYTHONUNBUFFERED=1
