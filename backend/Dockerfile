@@ -5,17 +5,25 @@ FROM python:3.10-alpine
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
+# Install Poetry
+RUN apk add --no-cache curl && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    apk del curl
+
+# Set environment variable to ensure Poetry installs dependencies globally
+ENV POETRY_VIRTUALENVS_CREATE=false
+
 # Set the working directory for the container
 WORKDIR /app/backend
 
-# Copy the Python dependency file into the container
-COPY requirements.txt .
+# Copy the Poetry dependency files into the container
+COPY pyproject.toml poetry.lock ./
 
 # Install system dependencies required for GeoDjango, including compilation dependencies and geospatial libraries
 RUN apk update && \
     apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev python3-dev && \
     apk add --no-cache geos gdal proj binutils postgresql-client && \
-    pip install --no-cache-dir -r requirements.txt && \
+    poetry install --no-interaction --no-ansi && \
     apk del .build-deps
 
 # Copy the entire project into the container
